@@ -14,7 +14,7 @@ function toTree(t, obj) {
         } else {
             var type = typeof(val)
 
-            if (type ===  'undefined') {
+            if (type === 'undefined') {
                 continue
             }
 
@@ -56,12 +56,18 @@ module.exports = function (babel) {
                 exit: function(decl, file) {
                     var node = decl.node
 
-                    if (node.source.value.endsWith('.css')) {
-                        // everything you see here is a complete guesswork but
-                        // that is what you get without proper documentation -
-                        // #babel6
+                    // everything you see here is a complete guesswork but that
+                    // is what you get without proper documentation - #babel6
 
+                    if (node.source.value.endsWith('.css')) {
                         var mod = requireResolve(node.source.value, path.resolve(file.file.opts.filename))
+                        var id = t.identifier(node.specifiers[0].local.name)
+                        var value = toTree(t, cssToJss({code: fs.readFileSync(mod.src).toString()})['@global']) // due to bugs we cannot use t.valueToNode
+
+                        decl.replaceWith(t.variableDeclaration('var', [t.variableDeclarator(id, value)]))
+                    } else
+                    if (node.source.value.endsWith('.css!')) {
+                        var mod = requireResolve(node.source.value.slice(0, -1), path.resolve(file.file.opts.filename))
                         var id = t.identifier(node.specifiers[0].local.name)
                         var value = toTree(t, cssToJss({code: fs.readFileSync(mod.src).toString()})) // due to bugs we cannot use t.valueToNode
 
