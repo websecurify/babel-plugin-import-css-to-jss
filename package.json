@@ -20,7 +20,7 @@
   "author": "Websecurfiy <contact@websecurify.com>",
   "license": "MIT",
   "dependencies": {
-    "jss-cli": "^3.0.1",
+    "jss-cli": "^5.0.1",
     "require-resolve": "0.0.2"
   },
   "devDependencies": {
